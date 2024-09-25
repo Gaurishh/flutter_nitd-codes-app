@@ -6,7 +6,8 @@ import 'package:nitdcodes007/auth/auth_service.dart';
 import 'package:nitdcodes007/components/button.dart';
 
 class EmailVerificationPage extends StatefulWidget {
-  const EmailVerificationPage({super.key});
+  final User user;
+  const EmailVerificationPage({super.key, required this.user});
 
   @override
   State<EmailVerificationPage> createState() => _EmailVerificationPageState();
@@ -20,9 +21,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   void initState() {
     super.initState();
     _auth.sendEmailVerificationLink();
-    timer = Timer.periodic(Duration(seconds: 5), (timer){
+    timer = Timer.periodic(Duration(seconds: 3), (timer){
       FirebaseAuth.instance.currentUser?.reload();
-      if(FirebaseAuth.instance.currentUser!.emailVerified){
+      if(FirebaseAuth.instance.currentUser!.emailVerified == true){
         timer.cancel();
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AuthPage()));
       }

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nitdcodes007/components/comment.dart';
 import 'package:nitdcodes007/components/comment_button.dart';
+import 'package:nitdcodes007/components/delete_button.dart';
 import 'package:nitdcodes007/components/like_button.dart';
 import 'package:nitdcodes007/helper/helper_methods.dart';
 
@@ -12,14 +13,13 @@ class WallPost extends StatefulWidget {
   final String time;
   final String postId;
   final List<String> likes;
-  const WallPost({
-    super.key,
-    required this.message,
-    required this.user,
-    required this.postId,
-    required this.likes,
-    required this.time
-  });
+  const WallPost(
+      {super.key,
+      required this.message,
+      required this.user,
+      required this.postId,
+      required this.likes,
+      required this.time});
 
   @override
   State<WallPost> createState() => _WallPostState();
@@ -98,6 +98,46 @@ class _WallPostState extends State<WallPost> {
             ));
   }
 
+  void deletePost() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Delete post"),
+              content: const Text("Are you sure you want to delete this post?"),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel")),
+                TextButton(
+                    onPressed: () async {
+                      final commentDocs = await FirebaseFirestore.instance
+                          .collection("User posts")
+                          .doc(widget.postId)
+                          .collection("Comments")
+                          .get();
+
+                      for (var doc in commentDocs.docs) {
+                        await FirebaseFirestore.instance
+                            .collection("User posts")
+                            .doc(widget.postId)
+                            .collection("Comments")
+                            .doc(doc.id)
+                            .delete();
+                      }
+
+                      await FirebaseFirestore.instance
+                          .collection("User posts")
+                          .doc(widget.postId)
+                          .delete()
+                          .then((value) => print("post deleted")).catchError((error) => print("Failed to delete post: $error"));
+
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Delete")),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -131,8 +171,15 @@ class _WallPostState extends State<WallPost> {
                 ],
               ),
               Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  (widget.user == currentUser.email
+                      ? DeleteButton(onTap: deletePost)
+                      : SizedBox.shrink()),
+                  const SizedBox(height: 10),
                   Text(widget.time, style: TextStyle(color: Colors.grey[500])),
+                  const SizedBox(height: 10),
                 ],
               )
             ],

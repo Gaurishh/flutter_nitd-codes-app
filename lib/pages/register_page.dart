@@ -44,6 +44,8 @@ class _RegisterPageState extends State<RegisterPage> {
               email: emailTextController.text,
               password: passwordTextController.text);
 
+      // print("Hi1");
+
       FirebaseFirestore.instance
           .collection("Users")
           .doc(userCredential.user!.email)
@@ -52,6 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
             'bio': "Empty bio..."
             }
           );
+
+      // print("Hi2");
 
       registrationSuccessful = true;
 
