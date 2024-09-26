@@ -28,34 +28,101 @@ class _RegisterPageState extends State<RegisterPage> {
   void signUp() async {
     bool registrationSuccessful = false;
 
+    // Show loading indicator
     showDialog(
         context: context,
         builder: (context) => const Center(child: CircularProgressIndicator()));
 
-    if (passwordTextController.text != confirmPasswordTextController.text) {
+    // Password validation
+    String password = passwordTextController.text;
+    String confirmPassword = confirmPasswordTextController.text;
+
+    if (password != confirmPassword) {
       Navigator.pop(context);
       displayMessage("Passwords don't match!");
       return;
     }
 
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: emailTextController.text,
-              password: passwordTextController.text);
+    List<String> specialCharacters = [
+      '!',
+      '@',
+      '#',
+      '\$',
+      '%',
+      '^',
+      '&',
+      '*',
+      '(',
+      ')',
+      '-',
+      '_',
+      '=',
+      '+',
+      '[',
+      ']',
+      '{',
+      '}',
+      ';',
+      ':',
+      '\'',
+      '"',
+      ',',
+      '.',
+      '<',
+      '>',
+      '/',
+      '?',
+      '|',
+      '`',
+      '~'
+    ];
 
-      // print("Hi1");
+    // Validation function to check conditions manually
+    bool isValidPassword(String password) {
+      if (password.length < 8) {
+        return false; // Password length should be at least 8 characters
+      }
+
+      bool hasUppercase = false;
+      bool hasSpecialCharacter = false;
+
+      for (int i = 0; i < password.length; i++) {
+        String char = password[i];
+
+        if (char.toUpperCase() == char && char.toLowerCase() != char) {
+          hasUppercase = true;
+        }
+
+        if (specialCharacters.contains(char)) {
+          hasSpecialCharacter = true;
+        }
+
+        if (hasUppercase && hasSpecialCharacter) {
+          break;
+        }
+      }
+
+      return hasUppercase && hasSpecialCharacter;
+    }
+
+    if (!isValidPassword(password)) {
+      Navigator.pop(context);
+      displayMessage(
+          "Password must be at least 8 characters, contain 1 special character, and 1 uppercase letter.");
+      return;
+    }
+
+    try {
+      UserCredential userCredential = await (
+              email: emailTextController.text, password: password);
 
       FirebaseFirestore.instance
           .collection("Users")
           .doc(userCredential.user!.email)
           .set({
-            'username': emailTextController.text.split('@')[0],
-            'bio': "Empty bio..."
-            }
-          );
-
-      // print("Hi2");
+        'username': emailTextController.text.split('@')[0],
+        'bio': "Empty bio...",
+      });
 
       registrationSuccessful = true;
 

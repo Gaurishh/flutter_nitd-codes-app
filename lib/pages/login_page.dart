@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nitdcodes007/components/button.dart';
 import 'package:nitdcodes007/components/text_field.dart';
+import 'package:nitdcodes007/pages/forgot_pw_page.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -71,7 +72,25 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordTextController,
                       hintText: 'Password',
                       obscureText: true),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context){
+                            return ForgotPasswordPage();
+                          }));
+                        },
+                        child: Text("Forgot Password?",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue),
+                           ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   MyButton(onTap: signIn, text: "Sign In"),
                   const SizedBox(height: 25),
                   Row(
