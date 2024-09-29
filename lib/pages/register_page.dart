@@ -1,10 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nitdcodes007/components/button.dart';
 import 'package:nitdcodes007/components/text_field.dart';
+import 'dart:math';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -15,9 +14,31 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  String randomString = "";
+  bool captchaVerified = false;
+
+  final captchaTextController = TextEditingController();
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
   final confirmPasswordTextController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    buildCaptcha();
+  }
+
+  void buildCaptcha() {
+    const letters =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+
+    const length = 6;
+    final random = Random();
+
+    randomString = String.fromCharCodes(List.generate(
+        length, (index) => letters.codeUnitAt(random.nextInt(letters.length))));
+    setState(() {});
+  }
 
   void displayMessage(String message) {
     showDialog(
@@ -28,18 +49,36 @@ class _RegisterPageState extends State<RegisterPage> {
   void signUp() async {
     bool registrationSuccessful = false;
 
-    // Show loading indicator
     showDialog(
         context: context,
         builder: (context) => const Center(child: CircularProgressIndicator()));
 
-    // Password validation
-    String password = passwordTextController.text;
-    String confirmPassword = confirmPasswordTextController.text;
+    bool isValidEmail(String email) {
+      // Check if the email contains exactly one '@'
+      int atIndex = email.indexOf('@');
+      if (atIndex == -1 || email.indexOf('@', atIndex + 1) != -1) {
+        return false;
+      }
 
-    if (password != confirmPassword) {
+      // Check if there is a '.' after the '@'
+      int dotIndex = email.indexOf('.', atIndex);
+      if (dotIndex == -1) {
+        return false;
+      }
+
+      // Ensure there are characters before '@', between '@' and '.', and after '.'
+      if (atIndex == 0 || dotIndex - atIndex < 2 || dotIndex == email.length - 1) {
+        return false;
+      }
+
+      return true;
+    }
+
+    String email = emailTextController.text;
+
+    if (!isValidEmail(email)) {
       Navigator.pop(context);
-      displayMessage("Passwords don't match!");
+      displayMessage("Please enter a valid email address.");
       return;
     }
 
@@ -105,6 +144,15 @@ class _RegisterPageState extends State<RegisterPage> {
       return hasUppercase && hasSpecialCharacter;
     }
 
+    String password = passwordTextController.text;
+    String confirmPassword = confirmPasswordTextController.text;
+
+    if (password != confirmPassword) {
+      Navigator.pop(context);
+      displayMessage("Passwords don't match!");
+      return;
+    }
+
     if (!isValidPassword(password)) {
       Navigator.pop(context);
       displayMessage(
@@ -112,8 +160,17 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    setState(() {});
+
+    if (!captchaVerified) {
+      Navigator.pop(context);
+      displayMessage("Captcha text does not match!");
+      return;
+    }
+
     try {
-      UserCredential userCredential = await (
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
               email: emailTextController.text, password: password);
 
       FirebaseFirestore.instance
@@ -153,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.lock, size: 75),
+                  Icon(Icons.lock, size: 50),
                   const SizedBox(height: 25),
                   Text("Create an account!"),
                   const SizedBox(height: 25),
@@ -172,8 +229,52 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Confirm Password',
                       obscureText: true),
                   const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5, left: 20, right: 20),
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 2),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Text(
+                          randomString,
+                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      IconButton(
+                          onPressed: () {
+                            buildCaptcha();
+                          },
+                          icon: const Icon(Icons.refresh))
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        captchaVerified =
+                            captchaTextController.text == randomString;
+                      });
+                    },
+                    controller: captchaTextController,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white)),
+                      focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white)),
+                      fillColor: Colors.grey[200],
+                      filled: true,
+                      hintText: "Enter captcha text here",
+                      hintStyle: TextStyle(color: Colors.grey[500]),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
                   MyButton(onTap: signUp, text: "Sign Up"),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
