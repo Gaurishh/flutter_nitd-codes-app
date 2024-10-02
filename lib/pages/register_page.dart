@@ -14,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool isPasswordVisible = false;
   String randomString = "";
   bool captchaVerified = false;
 
@@ -220,9 +221,22 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText: false),
                   const SizedBox(height: 15),
                   MyTextField(
-                      controller: passwordTextController,
-                      hintText: 'Password',
-                      obscureText: true),
+                    controller: passwordTextController,
+                    hintText: 'Password',
+                    obscureText: !isPasswordVisible, // Bind this to the toggle state
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                    ), // Add eye icon here
+                  ),
                   const SizedBox(height: 15),
                   MyTextField(
                       controller: confirmPasswordTextController,

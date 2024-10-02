@@ -2,7 +2,9 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nitdcodes007/auth/auth_service.dart';
 import 'package:nitdcodes007/components/button.dart';
+import 'package:nitdcodes007/components/square_tile.dart';
 import 'package:nitdcodes007/components/text_field.dart';
 import 'package:nitdcodes007/pages/forgot_pw_page.dart';
 
@@ -13,10 +15,11 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
+
+  bool isPasswordVisible = false; // Add this line
 
   void displayMessage(String message){
     showDialog(context: context, builder: (context) => AlertDialog(title: Text(message)));
@@ -69,24 +72,39 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: false),
                   const SizedBox(height: 25),
                   MyTextField(
-                      controller: passwordTextController,
-                      hintText: 'Password',
-                      obscureText: true),
+                    controller: passwordTextController,
+                    hintText: 'Password',
+                    obscureText: !isPasswordVisible, // Bind this to the toggle state
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                    ), // Add eye icon here
+                  ),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context){
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
                             return ForgotPasswordPage();
                           }));
                         },
-                        child: Text("Forgot Password?",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue),
-                           ),
+                        child: Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue),
+                        ),
                       ),
                     ],
                   ),
@@ -107,6 +125,15 @@ class _LoginPageState extends State<LoginPage> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue),
                           ))
+                    ],
+                  ),
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SquareTile(
+                          onTap: () => AuthService().signInWithGoogle(),
+                          imagePath: 'images/google_icon.png'),
                     ],
                   )
                 ],
