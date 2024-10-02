@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "714387462625",
+    "project_id": "nitdcodes007",
+    "storage_bucket": "nitdcodes007.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714387462625:android:da6de3507ee762aa465aa0",
+        "android_client_info": {
+          "package_name": "com.example.nitdcodes007"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADuwjIhIXVHR6cOVTOVCxlUu_TIFTlN34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
