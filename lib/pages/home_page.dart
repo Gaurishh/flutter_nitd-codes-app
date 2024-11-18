@@ -60,10 +60,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.grey[900],
         title: const Text(
           "NITD Codes </>",
           style: TextStyle(
@@ -92,8 +91,7 @@ class _HomePageState extends State<HomePage> {
                                   message: post['Message'],
                                   user: post['User Email'],
                                   postId: post.id,
-                                  likes:
-                                      List<String>.from(post['Likes'] ?? []),
+                                  likes: List<String>.from(post['Likes'] ?? []),
                                   time: formatDate(post['TimeStamp']));
                             });
                       } else if (snapshot.hasError) {
@@ -121,7 +119,11 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      drawer: MyDrawer(onProfileTap: goToProfilePage, onSignOut: signOut, onChatsTap: goToChats,),
+      drawer: MyDrawer(
+        onProfileTap: goToProfilePage,
+        onSignOut: signOut,
+        onChatsTap: goToChats,
+      ),
     );
   }
 }

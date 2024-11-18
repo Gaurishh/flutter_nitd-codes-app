@@ -5,7 +5,8 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final Widget? suffixIcon;
-  final Function(String)? onChanged; // Add this line for the optional onChanged function
+  final Function(String)?
+      onChanged; // Add this line for the optional onChanged function
 
   const MyTextField({
     super.key,
@@ -29,7 +30,7 @@ class MyTextField extends StatelessWidget {
         focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
         ),
-        fillColor: Colors.grey[200],
+        fillColor: Theme.of(context).colorScheme.primary,
         filled: true,
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey[500]),

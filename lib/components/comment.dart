@@ -16,7 +16,8 @@ class Comment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+          color: Theme.of(context).colorScheme.secondary,
+          borderRadius: BorderRadius.circular(4)),
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -33,18 +34,17 @@ class Comment extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               userEmailComp(
-                      text: user,
-                      onTap: () {
-                        if (user != currentUser.email) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ChatPage(recieverEmail: user),
-                            ),
-                          );
-                        }
-                      }),
+                  text: user,
+                  onTap: () {
+                    if (user != currentUser.email) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(recieverEmail: user),
+                        ),
+                      );
+                    }
+                  }),
               Text(time, style: TextStyle(color: Colors.grey[500])),
             ],
           )
