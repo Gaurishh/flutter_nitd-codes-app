@@ -91,7 +91,7 @@ class _WallPostState extends State<WallPost> {
                     },
                     child: Text("Save",
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary))),
+                            color: Theme.of(context).colorScheme.tertiary))),
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context);
@@ -100,7 +100,7 @@ class _WallPostState extends State<WallPost> {
                     },
                     child: Text("Cancel",
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary))),
+                            color: Theme.of(context).colorScheme.tertiary))),
               ],
             ));
   }
