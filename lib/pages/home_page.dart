@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
         'Message': textController.text,
         'TimeStamp': Timestamp.now(),
         'Likes': [],
+        'Resolved': false,
       });
     }
 
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                         .orderBy("TimeStamp", descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (snapshot.hasData) {
+                      if (snapshot.hasData){
                         return ListView.builder(
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
@@ -90,6 +91,7 @@ class _HomePageState extends State<HomePage> {
                               return WallPost(
                                   message: post['Message'],
                                   user: post['User Email'],
+                                  resolved: post['Resolved'],
                                   postId: post.id,
                                   likes: List<String>.from(post['Likes'] ?? []),
                                   time: formatDate(post['TimeStamp']));

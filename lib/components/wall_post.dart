@@ -5,6 +5,7 @@ import 'package:nitdcodes007/components/comment.dart';
 import 'package:nitdcodes007/components/comment_button.dart';
 import 'package:nitdcodes007/components/delete_button.dart';
 import 'package:nitdcodes007/components/like_button.dart';
+import 'package:nitdcodes007/components/resolve_button.dart';
 import 'package:nitdcodes007/components/user_email.dart';
 import 'package:nitdcodes007/helper/helper_methods.dart';
 import 'package:nitdcodes007/pages/chat_page.dart';
@@ -14,10 +15,12 @@ class WallPost extends StatefulWidget {
   final String user;
   final String time;
   final String postId;
+  final bool resolved;
   final List<String> likes;
   const WallPost(
       {super.key,
       required this.message,
+      required this.resolved,
       required this.user,
       required this.postId,
       required this.likes,
@@ -85,7 +88,6 @@ class _WallPostState extends State<WallPost> {
     });
   }
 
-
   void showCommentDialog() {
     showDialog(
         context: context,
@@ -112,6 +114,58 @@ class _WallPostState extends State<WallPost> {
                     child: Text("Cancel")),
               ],
             ));
+  }
+
+  void resolvePost() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Resolve Post"),
+        content: (widget.resolved
+            ? const Text(
+                "Are you sure you want to re-open this post and mark it as unresolved?")
+            : const Text("Are you sure you want to mark this post as solved?")),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel")),
+          TextButton(
+              onPressed: () async {
+                // Update the 'resolved' field to true in Firestore
+                await FirebaseFirestore.instance
+                    .collection("User posts")
+                    .doc(widget.postId)
+                    .update({
+                  'Resolved': (widget.resolved ? false : true)
+                }).then((_) {
+                  // Show a SnackBar indicating the post has been resolved
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: (widget.resolved
+                          ? Text('Post re-opened successfully!')
+                          : Text('Post resolved successfully!')),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  // Close the dialog
+                  Navigator.pop(context);
+                }).catchError((error) {
+                  // Handle errors, if any
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to resolve post: $error'),
+                      backgroundColor: Colors.red,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                  Navigator.pop(context);
+                });
+              },
+              child: (widget.resolved ? Text("Re-open") :  Text("Resolve"))),
+        ],
+      ),
+    );
   }
 
   void deletePost() {
@@ -175,6 +229,7 @@ class _WallPostState extends State<WallPost> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   userEmailComp(
+                      resolved: widget.resolved,
                       text: widget.user,
                       onTap: () {
                         if (widget.user != currentUser.email) {
@@ -189,6 +244,10 @@ class _WallPostState extends State<WallPost> {
                       }),
                   const SizedBox(height: 10),
                   Text(
+                    style: TextStyle(
+                        decoration: widget.resolved
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none),
                     widget.message,
                     overflow: TextOverflow
                         .ellipsis, // Prevent overflow in case of long text
@@ -199,11 +258,25 @@ class _WallPostState extends State<WallPost> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  (widget.user == currentUser.email
-                      ? DeleteButton(onTap: deletePost)
-                      : SizedBox.shrink()),
+                  Row(
+                    children: [
+                      (widget.user == currentUser.email
+                          ? ResolveButton(
+                              onTap: resolvePost, resolved: widget.resolved)
+                          : SizedBox.shrink()),
+                      const SizedBox(width: 5),
+                      (widget.user == currentUser.email
+                          ? DeleteButton(onTap: deletePost)
+                          : SizedBox.shrink())
+                    ],
+                  ),
                   const SizedBox(height: 10),
-                  Text(widget.time, style: TextStyle(color: Colors.grey[500])),
+                  Text(widget.time,
+                      style: TextStyle(
+                          decoration: widget.resolved
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                          color: Colors.grey[500])),
                   const SizedBox(height: 10),
                 ],
               )
@@ -218,7 +291,12 @@ class _WallPostState extends State<WallPost> {
                   const SizedBox(height: 5),
                   Text(
                     widget.likes.length.toString(),
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      decoration: widget.resolved
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      color: Colors.grey,
+                    ),
                   )
                 ],
               ),
@@ -227,10 +305,39 @@ class _WallPostState extends State<WallPost> {
                 children: [
                   CommentButton(onTap: showCommentDialog),
                   const SizedBox(height: 5),
-                  Text(
-                    '0',
-                    style: TextStyle(color: Colors.grey),
-                  )
+                  // Update this part to dynamically display the comment count
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("User posts")
+                        .doc(widget.postId)
+                        .collection("Comments")
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Text(
+                          '0',
+                          style: TextStyle(
+                            decoration: widget.resolved
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                            color: Colors.grey,
+                          ),
+                        );
+                      }
+
+                      // Get the length of the comments
+                      int commentCount = snapshot.data!.docs.length;
+                      return Text(
+                        '$commentCount',
+                        style: TextStyle(
+                          decoration: widget.resolved
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ],
@@ -257,6 +364,7 @@ class _WallPostState extends State<WallPost> {
                     final commentData = doc.data() as Map<String, dynamic>;
 
                     return Comment(
+                        resolved: widget.resolved,
                         text: commentData["CommentText"],
                         user: commentData["CommentedBy"],
                         time: formatDate(commentData["CommentTime"]));

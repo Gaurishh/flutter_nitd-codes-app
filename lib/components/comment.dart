@@ -7,10 +7,11 @@ class Comment extends StatelessWidget {
   final String text;
   final String user;
   final String time;
+  final bool resolved;
   final currentUser = FirebaseAuth.instance.currentUser!;
 
   Comment(
-      {super.key, required this.text, required this.user, required this.time});
+      {super.key, required this.text, required this.user, required this.time, this.resolved = false});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class Comment extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(text),
+              Text(text, style: TextStyle(decoration: resolved ? TextDecoration.lineThrough : TextDecoration.none)),
             ],
           ),
           const SizedBox(height: 5),
@@ -34,6 +35,7 @@ class Comment extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               userEmailComp(
+                  resolved: resolved,
                   text: user,
                   onTap: () {
                     if (user != currentUser.email) {
@@ -45,7 +47,7 @@ class Comment extends StatelessWidget {
                       );
                     }
                   }),
-              Text(time, style: TextStyle(color: Colors.grey[500])),
+              Text(time, style: TextStyle(decoration: resolved ? TextDecoration.lineThrough : TextDecoration.none, color: Colors.grey[500])),
             ],
           )
         ],
