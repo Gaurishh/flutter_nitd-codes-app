@@ -21,6 +21,7 @@ class MyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      cursorColor: Theme.of(context).colorScheme.tertiary,
       obscureText: obscureText,
       onChanged: onChanged, // Add this line to handle changes if provided
       decoration: InputDecoration(

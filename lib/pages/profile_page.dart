@@ -24,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: const TextStyle(color: Colors.white)),
               content: TextField(
                 autofocus: true,
+                cursorColor: Theme.of(context).colorScheme.tertiary,
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                     hintText: "Enter new $field",
@@ -80,7 +81,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text(
                       currentUser.email!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey[700]),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary),
                     ),
                     const SizedBox(height: 50),
                     Padding(
