@@ -25,13 +25,16 @@ class _LoginPageState extends State<LoginPage> {
 
   void displayMessage(String message) {
     showDialog(
-        context: context, builder: (context) => AlertDialog(title: Text(message)));
+        context: context,
+        builder: (context) => AlertDialog(title: Text(message)));
   }
 
   Future<void> signIn() async {
     bool signInSuccessful = false;
-    showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
-    
+    showDialog(
+        context: context,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
     try {
       String login = emailTextController.text.trim();
       String password = passwordTextController.text.trim();
@@ -48,13 +51,14 @@ class _LoginPageState extends State<LoginPage> {
           email = userSnapshot.docs.first.id; // Get email from document ID
         } else {
           throw FirebaseAuthException(
-              code: "user-not-found", message: "No user found with this username.");
+              code: "user-not-found",
+              message: "No user found with this username.");
         }
       }
 
       // Proceed with email/password login
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email, password: password);
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
 
       signInSuccessful = true;
 
@@ -77,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -125,8 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(
                           "Forgot Password?",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue),
+                              fontWeight: FontWeight.bold, color: Colors.blue),
                         ),
                       ),
                     ],

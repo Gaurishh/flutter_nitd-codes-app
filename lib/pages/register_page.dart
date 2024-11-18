@@ -51,9 +51,37 @@ class _RegisterPageState extends State<RegisterPage> {
   // Function to validate password as the user types
   void validatePassword(String password) {
     List<String> specialCharacters = [
-      '!', '@', '#', '\$', '%', '^', '&', '*', '(', ')', '-', '_', '=',
-      '+', '[', ']', '{', '}', ';', ':', '\'', '"', ',', '.', '<', '>',
-      '/', '?', '|', '`', '~'
+      '!',
+      '@',
+      '#',
+      '\$',
+      '%',
+      '^',
+      '&',
+      '*',
+      '(',
+      ')',
+      '-',
+      '_',
+      '=',
+      '+',
+      '[',
+      ']',
+      '{',
+      '}',
+      ';',
+      ':',
+      '\'',
+      '"',
+      ',',
+      '.',
+      '<',
+      '>',
+      '/',
+      '?',
+      '|',
+      '`',
+      '~'
     ];
 
     bool isValidPassword(String password) {
@@ -106,7 +134,9 @@ class _RegisterPageState extends State<RegisterPage> {
         return false;
       }
 
-      if (atIndex == 0 || dotIndex - atIndex < 2 || dotIndex == email.length - 1) {
+      if (atIndex == 0 ||
+          dotIndex - atIndex < 2 ||
+          dotIndex == email.length - 1) {
         return false;
       }
 
@@ -177,7 +207,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -223,8 +253,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       // Red warning text for weak password
                       if (passwordError)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5),
                           child: Text(
                             'Password must be at least 8 characters, contain 1 special character, and 1 uppercase letter.',
                             style: TextStyle(color: Colors.red),
@@ -277,7 +307,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderSide: BorderSide(color: Colors.white)),
                       focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white)),
-                      fillColor: Colors.grey[200],
+                      fillColor: Theme.of(context).colorScheme.secondary,
                       filled: true,
                       hintText: "Enter captcha text here",
                       hintStyle: TextStyle(color: Colors.grey[500]),

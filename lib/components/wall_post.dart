@@ -78,6 +78,7 @@ class _WallPostState extends State<WallPost> {
         builder: (context) => AlertDialog(
               title: Text("Add Comment"),
               content: TextField(
+                cursorColor: Theme.of(context).colorScheme.tertiary,
                 controller: _commentTextController,
                 decoration: InputDecoration(hintText: "Write a comment..."),
               ),
@@ -88,14 +89,18 @@ class _WallPostState extends State<WallPost> {
                       Navigator.pop(context);
                       _commentTextController.clear();
                     },
-                    child: Text("Save")),
+                    child: Text("Save",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary))),
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context);
 
                       _commentTextController.clear();
                     },
-                    child: Text("Cancel")),
+                    child: Text("Cancel",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary))),
               ],
             ));
   }
