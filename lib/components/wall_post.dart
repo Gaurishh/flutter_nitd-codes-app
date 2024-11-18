@@ -133,7 +133,9 @@ class _WallPostState extends State<WallPost> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel")),
+              child: Text("Cancel",
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.tertiary))),
           TextButton(
               onPressed: () async {
                 // Update the 'resolved' field to true in Firestore
@@ -167,7 +169,13 @@ class _WallPostState extends State<WallPost> {
                   Navigator.pop(context);
                 });
               },
-              child: (widget.resolved ? Text("Re-open") :  Text("Resolve"))),
+              child: (widget.resolved
+                  ? Text("Re-open",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary))
+                  : Text("Resolve",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary)))),
         ],
       ),
     );
@@ -181,8 +189,11 @@ class _WallPostState extends State<WallPost> {
               content: const Text("Are you sure you want to delete this post?"),
               actions: [
                 TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel")),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("Cancel",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary)),
+                ),
                 TextButton(
                     onPressed: () async {
                       final commentDocs = await FirebaseFirestore.instance
@@ -210,7 +221,9 @@ class _WallPostState extends State<WallPost> {
 
                       Navigator.pop(context);
                     },
-                    child: const Text("Delete")),
+                    child: Text("Delete",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary))),
               ],
             ));
   }
