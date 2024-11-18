@@ -63,6 +63,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "NITD Codes </>",
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                         .orderBy("TimeStamp", descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (snapshot.hasData){
+                      if (snapshot.hasData) {
                         return ListView.builder(
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
