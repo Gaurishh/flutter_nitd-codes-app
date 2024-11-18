@@ -61,6 +61,19 @@ class _WallPostState extends State<WallPost> {
   }
 
   void addComment(String commentText) {
+    if (commentText.isEmpty) {
+      // Show an error message using SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Comment cannot be empty'),
+          backgroundColor: Colors.red, // Red color for error
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    // If the comment is not empty, add it to Firestore
     FirebaseFirestore.instance
         .collection("User posts")
         .doc(widget.postId)
@@ -68,9 +81,10 @@ class _WallPostState extends State<WallPost> {
         .add({
       "CommentText": commentText,
       "CommentedBy": currentUser.email,
-      "CommentTime": Timestamp.now()
+      "CommentTime": Timestamp.now(),
     });
   }
+
 
   void showCommentDialog() {
     showDialog(

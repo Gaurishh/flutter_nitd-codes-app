@@ -9,10 +9,12 @@ class ChatService {
 
   //get user stream
   Stream<List<Map<String, dynamic>>> getUsersStream() {
-    return _firestore.collection("Users").snapshots().map((snapshot) {
+    return FirebaseFirestore.instance.collection("Users").snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
-        final user = doc.data();
-        return user;
+        // Add the document ID (email) into the returned data map
+        final userData = doc.data() as Map<String, dynamic>;
+        userData['email'] = doc.id; // Firebase document ID is the email
+        return userData;
       }).toList();
     });
   }
