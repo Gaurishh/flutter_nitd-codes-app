@@ -71,7 +71,7 @@ class _RegisterPageState extends State<RegisterPage> {
       '}',
       ';',
       ':',
-      '\'',
+      "'",
       '"',
       ',',
       '.',
@@ -213,136 +213,137 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.lock, size: 50),
-                  const SizedBox(height: 25),
-                  Text("Create an account!"),
-                  const SizedBox(height: 25),
-                  MyTextField(
-                      controller: emailTextController,
-                      hintText: 'Email',
-                      obscureText: false),
-                  const SizedBox(height: 15),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SafeArea(
+        child: SingleChildScrollView( // Wrap the entire body inside SingleChildScrollView
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock, size: 50),
+                const SizedBox(height: 25),
+                Text("Create an account!"),
+                const SizedBox(height: 25),
+                MyTextField(
+                    controller: emailTextController,
+                    hintText: 'Email',
+                    obscureText: false),
+                const SizedBox(height: 15),
 
-                  // Password field with visibility toggle and validation
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      MyTextField(
-                        controller: passwordTextController,
-                        hintText: 'Password',
-                        obscureText: !isPasswordVisible,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              isPasswordVisible = !isPasswordVisible;
-                            });
-                          },
+                // Password field with visibility toggle and validation
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MyTextField(
+                      controller: passwordTextController,
+                      hintText: 'Password',
+                      obscureText: !isPasswordVisible,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
-                        // Validate password as user types
-                        onChanged: (value) {
-                          validatePassword(value);
+                        onPressed: () {
+                          setState(() {
+                            isPasswordVisible = !isPasswordVisible;
+                          });
                         },
                       ),
+                      // Validate password as user types
+                      onChanged: (value) {
+                        validatePassword(value);
+                      },
+                    ),
 
-                      // Red warning text for weak password
-                      if (passwordError)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 5),
-                          child: Text(
-                            'Password must be at least 8 characters, contain 1 special character, and 1 uppercase letter.',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 15),
-                  MyTextField(
-                      controller: confirmPasswordTextController,
-                      hintText: 'Confirm Password',
-                      obscureText: true),
-                  const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(
-                            top: 5, bottom: 5, left: 20, right: 20),
-                        decoration: BoxDecoration(
-                            border: Border.all(width: 2),
-                            borderRadius: BorderRadius.circular(8)),
+                    // Red warning text for weak password
+                    if (passwordError)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 5),
                         child: Text(
-                          randomString,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 20),
+                          'Password must be at least 8 characters, contain 1 special character, and 1 uppercase letter.',
+                          style: TextStyle(color: Colors.red),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      IconButton(
-                          onPressed: () {
-                            buildCaptcha();
-                          },
-                          icon: const Icon(Icons.refresh))
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        captchaVerified =
-                            captchaTextController.text == randomString;
-                      });
-                    },
-                    controller: captchaTextController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      fillColor: Theme.of(context).colorScheme.secondary,
-                      filled: true,
-                      hintText: "Enter captcha text here",
-                      hintStyle: TextStyle(color: Colors.grey[500]),
-                    ),
-                  ),
+                  ],
+                ),
 
-                  const SizedBox(height: 15),
-                  MyButton(onTap: signUp, text: "Sign Up"),
-                  const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Already have an account?",
-                          style: TextStyle(color: Colors.grey[700])),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                          onTap: widget.onTap,
-                          child: const Text(
-                            "Login here",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue),
-                          ))
-                    ],
-                  )
-                ],
-              ),
+                const SizedBox(height: 15),
+                MyTextField(
+                    controller: confirmPasswordTextController,
+                    hintText: 'Confirm Password',
+                    obscureText: true),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                          top: 5, bottom: 5, left: 20, right: 20),
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 2),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Text(
+                        randomString,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 20),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                        onPressed: () {
+                          buildCaptcha();
+                        },
+                        icon: const Icon(Icons.refresh))
+                  ],
+                ),
+                const SizedBox(height: 15),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      captchaVerified =
+                          captchaTextController.text == randomString;
+                    });
+                  },
+                  controller: captchaTextController,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white)),
+                    fillColor: Theme.of(context).colorScheme.secondary,
+                    filled: true,
+                    hintText: "Enter captcha text here",
+                    hintStyle: TextStyle(color: Colors.grey[500]),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+                MyButton(onTap: signUp, text: "Sign Up"),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Already have an account?",
+                        style: TextStyle(color: Colors.grey[700])),
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                        onTap: widget.onTap,
+                        child: const Text(
+                          "Login here",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue),
+                        ))
+                  ],
+                )
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

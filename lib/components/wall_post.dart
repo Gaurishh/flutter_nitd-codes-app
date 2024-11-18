@@ -106,7 +106,7 @@ class _WallPostState extends State<WallPost> {
     if(widget.resolved){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Cannot like resolved post'),
+          content: Text('Cannot comment on resolved post'),
           backgroundColor: Colors.red, // Red color for error
           duration: Duration(seconds: 2),
         ),
@@ -293,8 +293,8 @@ class _WallPostState extends State<WallPost> {
                             ? TextDecoration.lineThrough
                             : TextDecoration.none),
                     widget.message,
-                    overflow: TextOverflow
-                        .ellipsis, // Prevent overflow in case of long text
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis, // Prevent overflow in case of long text
                   ),
                 ],
               ),
@@ -316,6 +316,9 @@ class _WallPostState extends State<WallPost> {
                   ),
                   const SizedBox(height: 10),
                   Text(widget.time,
+                  overflow: TextOverflow
+                        .clip,
+                        softWrap: true,
                       style: TextStyle(
                           decoration: widget.resolved
                               ? TextDecoration.lineThrough
