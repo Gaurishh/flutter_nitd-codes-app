@@ -3,9 +3,10 @@ import 'package:nitdcodes007/components/my_list_tile.dart';
 
 class MyDrawer extends StatelessWidget {
   final void Function()? onProfileTap;
+  final void Function()? onChatsTap;
   final void Function()? onSignOut;
   const MyDrawer(
-      {super.key, required this.onProfileTap, required this.onSignOut});
+      {super.key, required this.onProfileTap, required this.onChatsTap, required this.onSignOut});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,11 @@ class MyDrawer extends StatelessWidget {
                 icon: Icons.person,
                 text: 'P R O F I L E',
                 onTap: onProfileTap,
+              ),
+              MyListTile(
+                icon: Icons.message,
+                text: 'C H A T S',
+                onTap: onChatsTap,
               ),
             ],
           ),

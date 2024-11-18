@@ -5,6 +5,7 @@ import 'package:nitdcodes007/components/drawer.dart';
 import 'package:nitdcodes007/components/text_field.dart';
 import 'package:nitdcodes007/components/wall_post.dart';
 import 'package:nitdcodes007/helper/helper_methods.dart';
+import 'package:nitdcodes007/pages/chatrooms.dart';
 import 'package:nitdcodes007/pages/profile_page.dart';
 import 'package:nitdcodes007/services/chat/chat_service.dart';
 
@@ -45,6 +46,14 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const ProfilePage()),
+    );
+  }
+
+  void goToChats() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChatRooms()),
     );
   }
 
@@ -112,7 +121,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      drawer: MyDrawer(onProfileTap: goToProfilePage, onSignOut: signOut),
+      drawer: MyDrawer(onProfileTap: goToProfilePage, onSignOut: signOut, onChatsTap: goToChats,),
     );
   }
 }
