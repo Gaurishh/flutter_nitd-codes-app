@@ -17,6 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool isPasswordVisible = false;
   String randomString = "";
   bool captchaVerified = false;
+  bool passwordError = false; // Added for tracking password strength
 
   final captchaTextController = TextEditingController();
   final emailTextController = TextEditingController();
@@ -47,80 +48,17 @@ class _RegisterPageState extends State<RegisterPage> {
         builder: (context) => AlertDialog(title: Text(message)));
   }
 
-  void signUp() async {
-    bool registrationSuccessful = false;
-
-    showDialog(
-        context: context,
-        builder: (context) => const Center(child: CircularProgressIndicator()));
-
-    bool isValidEmail(String email) {
-      // Check if the email contains exactly one '@'
-      int atIndex = email.indexOf('@');
-      if (atIndex == -1 || email.indexOf('@', atIndex + 1) != -1) {
-        return false;
-      }
-
-      // Check if there is a '.' after the '@'
-      int dotIndex = email.indexOf('.', atIndex);
-      if (dotIndex == -1) {
-        return false;
-      }
-
-      // Ensure there are characters before '@', between '@' and '.', and after '.'
-      if (atIndex == 0 || dotIndex - atIndex < 2 || dotIndex == email.length - 1) {
-        return false;
-      }
-
-      return true;
-    }
-
-    String email = emailTextController.text;
-
-    if (!isValidEmail(email)) {
-      Navigator.pop(context);
-      displayMessage("Please enter a valid email address.");
-      return;
-    }
-
+  // Function to validate password as the user types
+  void validatePassword(String password) {
     List<String> specialCharacters = [
-      '!',
-      '@',
-      '#',
-      '\$',
-      '%',
-      '^',
-      '&',
-      '*',
-      '(',
-      ')',
-      '-',
-      '_',
-      '=',
-      '+',
-      '[',
-      ']',
-      '{',
-      '}',
-      ';',
-      ':',
-      '\'',
-      '"',
-      ',',
-      '.',
-      '<',
-      '>',
-      '/',
-      '?',
-      '|',
-      '`',
-      '~'
+      '!', '@', '#', '\$', '%', '^', '&', '*', '(', ')', '-', '_', '=',
+      '+', '[', ']', '{', '}', ';', ':', '\'', '"', ',', '.', '<', '>',
+      '/', '?', '|', '`', '~'
     ];
 
-    // Validation function to check conditions manually
     bool isValidPassword(String password) {
       if (password.length < 8) {
-        return false; // Password length should be at least 8 characters
+        return false;
       }
 
       bool hasUppercase = false;
@@ -145,6 +83,44 @@ class _RegisterPageState extends State<RegisterPage> {
       return hasUppercase && hasSpecialCharacter;
     }
 
+    setState(() {
+      passwordError = !isValidPassword(password); // Updates the error flag
+    });
+  }
+
+  void signUp() async {
+    bool registrationSuccessful = false;
+
+    showDialog(
+        context: context,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    bool isValidEmail(String email) {
+      int atIndex = email.indexOf('@');
+      if (atIndex == -1 || email.indexOf('@', atIndex + 1) != -1) {
+        return false;
+      }
+
+      int dotIndex = email.indexOf('.', atIndex);
+      if (dotIndex == -1) {
+        return false;
+      }
+
+      if (atIndex == 0 || dotIndex - atIndex < 2 || dotIndex == email.length - 1) {
+        return false;
+      }
+
+      return true;
+    }
+
+    String email = emailTextController.text;
+
+    if (!isValidEmail(email)) {
+      Navigator.pop(context);
+      displayMessage("Please enter a valid email address.");
+      return;
+    }
+
     String password = passwordTextController.text;
     String confirmPassword = confirmPasswordTextController.text;
 
@@ -154,14 +130,12 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    if (!isValidPassword(password)) {
+    if (passwordError) {
       Navigator.pop(context);
       displayMessage(
           "Password must be at least 8 characters, contain 1 special character, and 1 uppercase letter.");
       return;
     }
-
-    setState(() {});
 
     if (!captchaVerified) {
       Navigator.pop(context);
@@ -220,23 +194,45 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Email',
                       obscureText: false),
                   const SizedBox(height: 15),
-                  MyTextField(
-                    controller: passwordTextController,
-                    hintText: 'Password',
-                    obscureText: !isPasswordVisible, // Bind this to the toggle state
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+
+                  // Password field with visibility toggle and validation
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      MyTextField(
+                        controller: passwordTextController,
+                        hintText: 'Password',
+                        obscureText: !isPasswordVisible,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            });
+                          },
+                        ),
+                        // Validate password as user types
+                        onChanged: (value) {
+                          validatePassword(value);
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
-                      },
-                    ), // Add eye icon here
+
+                      // Red warning text for weak password
+                      if (passwordError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            'Password must be at least 8 characters, contain 1 special character, and 1 uppercase letter.',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                    ],
                   ),
+
                   const SizedBox(height: 15),
                   MyTextField(
                       controller: confirmPasswordTextController,
@@ -247,13 +243,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(top: 5, bottom: 5, left: 20, right: 20),
+                        padding: const EdgeInsets.only(
+                            top: 5, bottom: 5, left: 20, right: 20),
                         decoration: BoxDecoration(
                             border: Border.all(width: 2),
                             borderRadius: BorderRadius.circular(8)),
                         child: Text(
                           randomString,
-                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 20),
                         ),
                       ),
                       const SizedBox(width: 10),

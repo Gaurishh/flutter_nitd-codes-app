@@ -5,7 +5,9 @@ import 'package:nitdcodes007/components/comment.dart';
 import 'package:nitdcodes007/components/comment_button.dart';
 import 'package:nitdcodes007/components/delete_button.dart';
 import 'package:nitdcodes007/components/like_button.dart';
+import 'package:nitdcodes007/components/user_email.dart';
 import 'package:nitdcodes007/helper/helper_methods.dart';
+import 'package:nitdcodes007/pages/chat_page.dart';
 
 class WallPost extends StatefulWidget {
   final String message;
@@ -129,7 +131,9 @@ class _WallPostState extends State<WallPost> {
                           .collection("User posts")
                           .doc(widget.postId)
                           .delete()
-                          .then((value) => print("post deleted")).catchError((error) => print("Failed to delete post: $error"));
+                          .then((value) => print("post deleted"))
+                          .catchError((error) =>
+                              print("Failed to delete post: $error"));
 
                       Navigator.pop(context);
                     },
@@ -156,12 +160,19 @@ class _WallPostState extends State<WallPost> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.user,
-                    style: TextStyle(color: Colors.grey[500]),
-                    overflow: TextOverflow
-                        .ellipsis, // Prevent overflow in case of long text
-                  ),
+                  userEmailComp(
+                      text: widget.user,
+                      onTap: () {
+                        if (widget.user != currentUser.email) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatPage(recieverEmail: widget.user),
+                            ),
+                          );
+                        }
+                      }),
                   const SizedBox(height: 10),
                   Text(
                     widget.message,

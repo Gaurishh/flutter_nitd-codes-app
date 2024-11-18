@@ -6,6 +6,7 @@ import 'package:nitdcodes007/components/text_field.dart';
 import 'package:nitdcodes007/components/wall_post.dart';
 import 'package:nitdcodes007/helper/helper_methods.dart';
 import 'package:nitdcodes007/pages/profile_page.dart';
+import 'package:nitdcodes007/services/chat/chat_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +18,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final textController = TextEditingController();
+
+  final ChatService _chatService = ChatService();
 
   void signOut() {
     FirebaseAuth.instance.signOut();

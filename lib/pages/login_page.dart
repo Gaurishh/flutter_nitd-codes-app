@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nitdcodes007/auth/auth_service.dart';
@@ -15,36 +16,58 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
+
 class _LoginPageState extends State<LoginPage> {
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();
 
-  bool isPasswordVisible = false; // Add this line
+  bool isPasswordVisible = false;
 
-  void displayMessage(String message){
-    showDialog(context: context, builder: (context) => AlertDialog(title: Text(message)));
+  void displayMessage(String message) {
+    showDialog(
+        context: context, builder: (context) => AlertDialog(title: Text(message)));
   }
 
-  void signIn() async {
+  Future<void> signIn() async {
     bool signInSuccessful = false;
     showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
+    
     try {
+      String login = emailTextController.text.trim();
+      String password = passwordTextController.text.trim();
+      String email = login;
+
+      // Check if the input is a username (no '@'), then get the corresponding email
+      if (!login.contains('@')) {
+        var userSnapshot = await FirebaseFirestore.instance
+            .collection('Users')
+            .where('username', isEqualTo: login)
+            .get();
+
+        if (userSnapshot.docs.isNotEmpty) {
+          email = userSnapshot.docs.first.id; // Get email from document ID
+        } else {
+          throw FirebaseAuthException(
+              code: "user-not-found", message: "No user found with this username.");
+        }
+      }
+
+      // Proceed with email/password login
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailTextController.text,
-          password: passwordTextController.text);
+          email: email, password: password);
 
       signInSuccessful = true;
 
-      if(context.mounted){
+      if (context.mounted) {
         Navigator.pop(context);
       }
     } on FirebaseAuthException catch (e) {
-      if(context.mounted){
+      if (context.mounted) {
         Navigator.pop(context);
-        displayMessage(e.code);
+        displayMessage(e.message ?? "Login failed. Please try again.");
       }
     } finally {
-      if(!signInSuccessful && context.mounted){
+      if (!signInSuccessful && context.mounted) {
         Navigator.pop(context);
         displayMessage("Error: Invalid credentials");
       }
@@ -68,13 +91,13 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 25),
                   MyTextField(
                       controller: emailTextController,
-                      hintText: 'Email',
+                      hintText: 'Email or Username',
                       obscureText: false),
                   const SizedBox(height: 25),
                   MyTextField(
                     controller: passwordTextController,
                     hintText: 'Password',
-                    obscureText: !isPasswordVisible, // Bind this to the toggle state
+                    obscureText: !isPasswordVisible, // Password toggle
                     suffixIcon: IconButton(
                       icon: Icon(
                         isPasswordVisible
@@ -86,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                           isPasswordVisible = !isPasswordVisible;
                         });
                       },
-                    ), // Add eye icon here
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Row(
