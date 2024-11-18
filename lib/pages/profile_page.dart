@@ -25,27 +25,28 @@ class _ProfilePageState extends State<ProfilePage> {
               content: TextField(
                 autofocus: true,
                 cursorColor: Theme.of(context).colorScheme.tertiary,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                     hintText: "Enter new $field",
-                    hintStyle: TextStyle(color: Colors.grey)),
+                    hintStyle: const TextStyle(color: Colors.grey)),
                 onChanged: (value) {
                   newValue = value;
                 },
               ),
               actions: [
                 TextButton(
-                  child: Text('Cancel', style: TextStyle(color: Colors.white)),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.white)),
                   onPressed: () => Navigator.pop(context),
                 ),
                 TextButton(
-                  child: Text('Save', style: TextStyle(color: Colors.white)),
+                  child: const Text('Save', style: TextStyle(color: Colors.white)),
                   onPressed: () => Navigator.of(context).pop(newValue),
                 )
               ],
             ));
 
-    if (newValue.trim().length > 0) {
+    if (newValue.trim().isNotEmpty) {
       await usersCollection.doc(currentUser.email).update({field: newValue});
     }
   }
@@ -66,18 +67,32 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.grey[900],
         ),
         body: StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('Users')
-                .doc(currentUser.email)
-                .snapshots(),
+            stream: usersCollection.doc(currentUser.email).snapshots(),
             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              }
+
               if (snapshot.hasData) {
-                final userData = snapshot.data!.data() as Map<String, dynamic>;
+                // Get user data or default to empty map
+                final userData = snapshot.data?.data() as Map<String, dynamic>? ?? {};
+
+                // Fallback to default values if fields are missing
+                final username = userData['username'] ?? currentUser.email!.split('@')[0];
+                final bio = userData['bio'] ?? 'Empty bio...';
 
                 return ListView(
                   children: [
                     const SizedBox(height: 50),
-                    Icon(Icons.person, size: 72),
+                    const Icon(Icons.person, size: 72),
                     Text(
                       currentUser.email!,
                       textAlign: TextAlign.center,
@@ -91,25 +106,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(color: Colors.grey[600])),
                     ),
                     MyTextBox(
-                      text: userData['username'],
+                      text: username,
                       sectionName: 'Username',
                       onPressed: () => editField('username'),
                     ),
                     MyTextBox(
-                      text: userData['bio'],
+                      text: bio,
                       sectionName: 'Bio',
                       onPressed: () => editField('bio'),
                     ),
                   ],
                 );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error${snapshot.error}'),
-                );
               }
 
               return const Center(
-                child: CircularProgressIndicator(),
+                child: Text('No user data found.'),
               );
             }));
   }
