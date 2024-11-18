@@ -28,25 +28,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 decoration: InputDecoration(
                     hintText: "Enter new $field",
                     hintStyle: TextStyle(color: Colors.grey)),
-                onChanged: (value){
+                onChanged: (value) {
                   newValue = value;
                 },
               ),
               actions: [
-                TextButton(child: Text('Cancel', style: TextStyle(color: Colors.white)), onPressed: () => Navigator.pop(context),),
-                TextButton(child: Text('Save', style: TextStyle(color: Colors.white)), onPressed: () => Navigator.of(context).pop(newValue),)
+                TextButton(
+                  child: Text('Cancel', style: TextStyle(color: Colors.white)),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                TextButton(
+                  child: Text('Save', style: TextStyle(color: Colors.white)),
+                  onPressed: () => Navigator.of(context).pop(newValue),
+                )
               ],
             ));
 
-            if(newValue.trim().length > 0){
-              await usersCollection.doc(currentUser.email).update({field: newValue});
-            }
+    if (newValue.trim().length > 0) {
+      await usersCollection.doc(currentUser.email).update({field: newValue});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.white),
           title: const Text(
