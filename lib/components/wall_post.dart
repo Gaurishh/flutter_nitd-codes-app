@@ -43,6 +43,19 @@ class _WallPostState extends State<WallPost> {
   }
 
   void toggleLike() {
+
+    if(widget.resolved){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot like resolved post'),
+          backgroundColor: Colors.red, // Red color for error
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      return;
+    }
+
     setState(() {
       isLiked = !isLiked;
     });
@@ -89,6 +102,19 @@ class _WallPostState extends State<WallPost> {
   }
 
   void showCommentDialog() {
+
+    if(widget.resolved){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot like resolved post'),
+          backgroundColor: Colors.red, // Red color for error
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      return;
+    }
+
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
