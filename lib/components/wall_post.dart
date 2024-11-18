@@ -175,8 +175,8 @@ class _WallPostState extends State<WallPost> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: (widget.resolved
-                          ? Text('Post re-opened successfully!')
-                          : Text('Post resolved successfully!')),
+                          ? Text('Post resolved successfully!')
+                          : Text('Post re-opened successfully!')),
                       backgroundColor: Colors.green,
                       duration: Duration(seconds: 2),
                     ),
