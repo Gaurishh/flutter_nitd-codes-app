@@ -151,6 +151,12 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    if(!email.endsWith("@nitdelhi.ac.in")){
+      Navigator.pop(context);
+      displayMessage("Only NITDians are allowed!");
+      return;
+    }
+
     String password = passwordTextController.text;
     String confirmPassword = confirmPasswordTextController.text;
 
