@@ -5,6 +5,7 @@ import 'package:nitdcodes007/components/comment.dart';
 import 'package:nitdcodes007/components/comment_button.dart';
 import 'package:nitdcodes007/components/delete_button.dart';
 import 'package:nitdcodes007/components/like_button.dart';
+import 'package:nitdcodes007/components/post_details_component.dart';
 import 'package:nitdcodes007/components/resolve_button.dart';
 import 'package:nitdcodes007/components/user_email.dart';
 import 'package:nitdcodes007/helper/helper_methods.dart';
@@ -256,113 +257,142 @@ class _WallPostState extends State<WallPost> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      margin: EdgeInsets.only(top: 25, left: 25, right: 25),
-      padding: EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  userEmailComp(
-                      resolved: widget.resolved,
-                      text: widget.user,
-                      onTap: () {
-                        if (widget.user != currentUser.email) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ChatPage(recieverEmail: widget.user),
-                            ),
-                          );
-                        }
-                      }),
-                  const SizedBox(height: 10),
-                  Text(
-                    style: TextStyle(
-                        decoration: widget.resolved
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none),
-                    widget.message,
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis, // Prevent overflow in case of long text
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
-                    children: [
-                      (widget.user == currentUser.email
-                          ? ResolveButton(
-                              onTap: resolvePost, resolved: widget.resolved)
-                          : SizedBox.shrink()),
-                      const SizedBox(width: 5),
-                      (widget.user == currentUser.email
-                          ? DeleteButton(onTap: deletePost)
-                          : SizedBox.shrink())
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(widget.time,
-                  overflow: TextOverflow
-                        .clip,
-                        softWrap: true,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostDetailsComponent(
+              message: widget.message,
+              user: widget.user,
+              time: widget.time,
+              postId: widget.postId,
+              resolved: widget.resolved,
+              likes: widget.likes,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+        padding: EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    userEmailComp(
+                        resolved: widget.resolved,
+                        text: widget.user,
+                        onTap: () {
+                          if (widget.user != currentUser.email) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatPage(recieverEmail: widget.user),
+                              ),
+                            );
+                          }
+                        }),
+                    const SizedBox(height: 10),
+                    Text(
                       style: TextStyle(
                           decoration: widget.resolved
                               ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                          color: Colors.grey[500])),
-                  const SizedBox(height: 10),
-                ],
-              )
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Column(
-                children: [
-                  LikeButton(isLiked: isLiked, onTap: toggleLike),
-                  const SizedBox(height: 5),
-                  Text(
-                    widget.likes.length.toString(),
-                    style: TextStyle(
-                      decoration: widget.resolved
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                      color: Colors.grey,
+                              : TextDecoration.none),
+                      widget.message,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis, // Prevent overflow in case of long text
                     ),
-                  )
-                ],
-              ),
-              const SizedBox(width: 10),
-              Column(
-                children: [
-                  CommentButton(onTap: showCommentDialog),
-                  const SizedBox(height: 5),
-                  // Update this part to dynamically display the comment count
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("User posts")
-                        .doc(widget.postId)
-                        .collection("Comments")
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      children: [
+                        (widget.user == currentUser.email
+                            ? ResolveButton(
+                                onTap: resolvePost, resolved: widget.resolved)
+                            : SizedBox.shrink()),
+                        const SizedBox(width: 5),
+                        (widget.user == currentUser.email
+                            ? DeleteButton(onTap: deletePost)
+                            : SizedBox.shrink())
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(widget.time,
+                    overflow: TextOverflow
+                          .clip,
+                          softWrap: true,
+                        style: TextStyle(
+                            decoration: widget.resolved
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                            color: Colors.grey[500])),
+                    const SizedBox(height: 10),
+                  ],
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Column(
+                  children: [
+                    LikeButton(isLiked: isLiked, onTap: toggleLike),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.likes.length.toString(),
+                      style: TextStyle(
+                        decoration: widget.resolved
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                        color: Colors.grey,
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  children: [
+                    CommentButton(onTap: showCommentDialog),
+                    const SizedBox(height: 5),
+                    // Update this part to dynamically display the comment count
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection("User posts")
+                          .doc(widget.postId)
+                          .collection("Comments")
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text(
+                            '0',
+                            style: TextStyle(
+                              decoration: widget.resolved
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                              color: Colors.grey,
+                            ),
+                          );
+                        }
+      
+                        // Get the length of the comments
+                        int commentCount = snapshot.data!.docs.length;
                         return Text(
-                          '0',
+                          '$commentCount',
                           style: TextStyle(
                             decoration: widget.resolved
                                 ? TextDecoration.lineThrough
@@ -370,55 +400,43 @@ class _WallPostState extends State<WallPost> {
                             color: Colors.grey,
                           ),
                         );
-                      }
-
-                      // Get the length of the comments
-                      int commentCount = snapshot.data!.docs.length;
-                      return Text(
-                        '$commentCount',
-                        style: TextStyle(
-                          decoration: widget.resolved
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("User posts")
-                  .doc(widget.postId)
-                  .collection("Comments")
-                  .orderBy("CommentTime", descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("User posts")
+                    .doc(widget.postId)
+                    .collection("Comments")
+                    .orderBy("CommentTime", descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+      
+                  return ListView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: snapshot.data!.docs.map((doc) {
+                      final commentData = doc.data() as Map<String, dynamic>;
+      
+                      return Comment(
+                          resolved: widget.resolved,
+                          text: commentData["CommentText"],
+                          user: commentData["CommentedBy"],
+                          time: formatDate(commentData["CommentTime"]));
+                    }).toList(),
                   );
-                }
-
-                return ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: snapshot.data!.docs.map((doc) {
-                    final commentData = doc.data() as Map<String, dynamic>;
-
-                    return Comment(
-                        resolved: widget.resolved,
-                        text: commentData["CommentText"],
-                        user: commentData["CommentedBy"],
-                        time: formatDate(commentData["CommentTime"]));
-                  }).toList(),
-                );
-              })
-        ],
+                })
+          ],
+        ),
       ),
     );
   }
