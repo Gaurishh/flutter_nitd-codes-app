@@ -19,9 +19,10 @@ class _ProfilePageState extends State<ProfilePage> {
     await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              backgroundColor: Colors.grey[900],
+              backgroundColor: Theme.of(context).colorScheme.primary,
               title: Text("Edit " + field,
-                  style: const TextStyle(color: Colors.white)),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary)),
               content: TextField(
                 autofocus: true,
                 cursorColor: Theme.of(context).colorScheme.tertiary,
@@ -35,12 +36,15 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               actions: [
                 TextButton(
-                  child: const Text('Cancel',
-                      style: TextStyle(color: Colors.white)),
+                  child: Text('Cancel',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary)),
                   onPressed: () => Navigator.pop(context),
                 ),
                 TextButton(
-                  child: const Text('Save', style: TextStyle(color: Colors.white)),
+                  child: Text('Save',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary)),
                   onPressed: () => Navigator.of(context).pop(newValue),
                 )
               ],
@@ -83,10 +87,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
               if (snapshot.hasData) {
                 // Get user data or default to empty map
-                final userData = snapshot.data?.data() as Map<String, dynamic>? ?? {};
+                final userData =
+                    snapshot.data?.data() as Map<String, dynamic>? ?? {};
 
                 // Fallback to default values if fields are missing
-                final username = userData['username'] ?? currentUser.email!.split('@')[0];
+                final username =
+                    userData['username'] ?? currentUser.email!.split('@')[0];
                 final bio = userData['bio'] ?? 'Empty bio...';
 
                 return ListView(
