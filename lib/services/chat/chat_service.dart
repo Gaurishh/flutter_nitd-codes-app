@@ -20,7 +20,6 @@ class ChatService {
   }
 
   //send message
-
   Future<void> sendMessage(String recieverEmail, message) async {
     final String? currentUserEmail = _auth.currentUser!.email;
     final Timestamp timestamp = Timestamp.now();
@@ -44,7 +43,6 @@ class ChatService {
   }
 
   //get messages
-
   Stream<QuerySnapshot> getMessages(String userEmail, otherUserEmail) {
     List<String> emails = [userEmail, otherUserEmail];
     emails.sort();
